@@ -21,7 +21,6 @@ public class StepDefinitions {
 
     @Given("{actor} es un {}")
     public void isAnUserRegistered(Actor actor, String userType) {
-        System.out.println(get().url());
         actor.attemptsTo(Open.url(get().url()));
 
         UserType user = UserType.findUserProperty(userType);
