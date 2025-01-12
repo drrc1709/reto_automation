@@ -1,9 +1,14 @@
 package questions;
 
-import io.restassured.response.Response;
-import model.SearchUserResponse;
+import io.restassured.module.jsv.JsonSchemaValidator;
+import net.serenitybdd.rest.SerenityRest;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
+import org.apache.http.HttpStatus;
+
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static util.Schemas.SEARCH_USER;
 
 public class AskSearchUser implements Question<String> {
 
@@ -13,14 +18,20 @@ public class AskSearchUser implements Question<String> {
 
     @Override
     public String answeredBy(Actor actor) {
-        Response response = actor.recall("API_RESPONSE");
 
-        if (response.getStatusCode() != 200) {
-            throw new AssertionError("Error: Código de respuesta no es 200, fue: " + response.getStatusCode());
-        }
+        actor.should(
+                seeThat(
+                        "El codigo es el correcto",
+                        question -> SerenityRest.lastResponse().statusCode(),
+                        equalTo(HttpStatus.SC_OK)
+                ),
+                seeThat(
+                        "La respuesta coincide con el schema definido",
+                        question -> SerenityRest.lastResponse().asString(),
+                        JsonSchemaValidator.matchesJsonSchemaInClasspath(SEARCH_USER)
+                )
+        );
 
-        SearchUserResponse userData = response.body().as(SearchUserResponse.class);
-
-        return userData.getData().getFirst_name();
+        return SerenityRest.lastResponse().jsonPath().getString("data.first_name");
     }
 }

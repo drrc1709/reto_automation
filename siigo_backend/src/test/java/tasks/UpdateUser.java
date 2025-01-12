@@ -1,11 +1,12 @@
 package tasks;
 
-import interactions.PutUser;
+import static enums.SessionVariables.JOB;
+import static enums.SessionVariables.NAME;
+import interactions.userRequest.PutUser;
 import lombok.AllArgsConstructor;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 
-import static builders.UserRequestBuilder.buildUser;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 @AllArgsConstructor
@@ -21,8 +22,10 @@ public class UpdateUser implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
+        actor.remember(NAME.toString(), name);
+        actor.remember(JOB.toString(), job);
         actor.attemptsTo(
-                PutUser.withId(id, buildUser(name, job))
+                PutUser.withId(id)
         );
     }
 }

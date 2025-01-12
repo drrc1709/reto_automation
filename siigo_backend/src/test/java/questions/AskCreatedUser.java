@@ -1,9 +1,14 @@
 package questions;
 
-import io.restassured.response.Response;
-import model.CreateUserResponse;
+import io.restassured.module.jsv.JsonSchemaValidator;
+import net.serenitybdd.rest.SerenityRest;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
+import org.apache.http.HttpStatus;
+
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static util.Schemas.CREATE_USER;
 
 public class AskCreatedUser implements Question<String> {
 
@@ -13,13 +18,19 @@ public class AskCreatedUser implements Question<String> {
 
     @Override
     public String answeredBy(Actor actor) {
-        Response response = actor.recall("API_RESPONSE");
+        actor.should(
+                seeThat(
+                        "El recurso fue creado",
+                        question -> SerenityRest.lastResponse().statusCode(),
+                        equalTo(HttpStatus.SC_CREATED)
+                ),
+                seeThat(
+                        "La respuesta coincide con el schema definido",
+                        question -> SerenityRest.lastResponse().asString(),
+                        JsonSchemaValidator.matchesJsonSchemaInClasspath(CREATE_USER)
+                )
+        );
 
-        if (response.getStatusCode() != 201) {
-            throw new AssertionError("Error: El código de respuesta no es 201. Es: " + response.getStatusCode());
-        }
-
-        CreateUserResponse userResponse = response.body().as(CreateUserResponse.class);
-        return userResponse.getId();
+        return SerenityRest.lastResponse().jsonPath().getString("id");
     }
 }

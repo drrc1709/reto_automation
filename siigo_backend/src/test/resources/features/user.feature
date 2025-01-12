@@ -1,13 +1,16 @@
-Feature: Crear un usuario en reqres.in
+Feature: Usuarios en reqres.in
+
+  Background:
+    Given Daniel ingresa a la aplicacion
 
   @createUser
   Scenario: Crear un usuario exitosamente
-    When Daniel crea un usuario con nombre "morpheus" y trabajo "leader"
+    When el crea un usuario con nombre "morpheus" y trabajo "leader"
     Then el usuario se creo exitosamente
 
   @searchUser
   Scenario Outline: Consultar usuarios
-    When Daniel consulta el usuario por <id>
+    When el consulta el usuario por <id>
     Then el ve la informacion del usuario "<nombre>"
 
     Examples:
@@ -20,7 +23,7 @@ Feature: Crear un usuario en reqres.in
 
   @updateUser
   Scenario Outline: Actualizar usuarios
-    When Daniel actualiza el trabajo "<trabajo>" del usuario "<nombre>" con <id>
+    When el actualiza el trabajo "<trabajo>" del usuario "<nombre>" con <id>
     Then el ve que el nuevo trabajo "<trabajo>" fue actualizado
     Examples:
       | id | trabajo   | nombre |
@@ -30,5 +33,5 @@ Feature: Crear un usuario en reqres.in
 
   @deleteUser
   Scenario: Eliminar usuario
-    When Daniel elimna el usuario con id 12
+    When el elimna el usuario con id 12
     Then el ve que el usuario fue eliminado

@@ -1,6 +1,6 @@
 package tasks;
 
-import interactions.GetUser;
+import interactions.userRequest.GetUser;
 import lombok.AllArgsConstructor;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
