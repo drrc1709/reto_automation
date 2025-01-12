@@ -1,12 +1,17 @@
 package util;
 
-import net.thucydides.model.util.EnvironmentVariables;
+import org.aeonbits.owner.ConfigFactory;
 
 public class EnvironmentDataHandler {
-    private static EnvironmentVariables environmentVariables;
+    private static EnvironmentConf instance = null;
 
-    public static String getBaseUrl() {
-        return environmentVariables.optionalProperty("restapi.baseurl")
-                .orElse("https://reqres.in");
+    private EnvironmentDataHandler(){}
+
+    public static EnvironmentConf get(){
+
+        instance = ConfigFactory.create(EnvironmentConf.class);
+        instance.url();
+
+        return instance;
     }
 }

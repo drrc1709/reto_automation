@@ -1,10 +1,14 @@
 package questions;
 
-import io.restassured.response.Response;
-import model.CreateUserResponse;
-import model.UpdateUserResponse;
+import io.restassured.module.jsv.JsonSchemaValidator;
+import net.serenitybdd.rest.SerenityRest;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
+import org.apache.http.HttpStatus;
+
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static util.Schemas.UPDATE_USER;
 
 public class AskUpdatedUser implements Question<String> {
 
@@ -14,13 +18,20 @@ public class AskUpdatedUser implements Question<String> {
 
     @Override
     public String answeredBy(Actor actor) {
-        Response response = actor.recall("API_RESPONSE");
 
-        if (response.getStatusCode() != 200) {
-            throw new AssertionError("Error: El código de respuesta no es 200, fue: " + response.getStatusCode());
-        }
+        actor.should(
+                seeThat(
+                        "El codigo es el correcto",
+                        question -> SerenityRest.lastResponse().statusCode(),
+                        equalTo(HttpStatus.SC_OK)
+                ),
+                seeThat(
+                        "La respuesta coincide con el schema definido",
+                        question -> SerenityRest.lastResponse().asString(),
+                        JsonSchemaValidator.matchesJsonSchemaInClasspath(UPDATE_USER)
+                )
+        );
 
-        UpdateUserResponse updateUserResponse = response.body().as(UpdateUserResponse.class);
-        return updateUserResponse.getJob();
+        return SerenityRest.lastResponse().jsonPath().getString("job");
     }
 }

@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum Endpoints {
-    BASE_URL("https://reqres.in"),
-    API_USER("/api/users");
+    USER("/api/users"),
+    USER_PARAM("/api/users/{id}");
 
     private final String path;
 
