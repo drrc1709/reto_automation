@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
+                sh 'cd siigo_backend/'
                 sh 'mvn clean verify -D-Dcucumber.filter.tags=@user'
             }
         }
