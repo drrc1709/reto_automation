@@ -103,21 +103,17 @@ pipeline {
                 }
             }
         }
-
-        stage('Stop Selenium Grid') {
-            steps {
-                script {
-                    sh """
-                        cd siigo_frontend/
-                        docker-compose down
-                    """
-                }
-            }
-        }
     }
 
     post {
         always {
+            script {
+                sh """
+                    cd siigo_frontend/
+                    docker-compose down
+                """
+            }
+
             publishHTML target: [
                 allowMissing: false,
                 alwaysLinkToLastBuild: false,
