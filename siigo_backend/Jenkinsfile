@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'TAG', defaultValue: '@user', description: 'Tag to execute')
+    }
+
     tools {
         maven 'maven_3.8.3'
     }
@@ -11,7 +15,7 @@ pipeline {
                 script{
                     sh """
                         cd siigo_backend/
-                        mvn clean verify -D-Dcucumber.filter.tags=@user
+                        mvn clean verify -Dcucumber.filter.tags=${params.TAG}
                     """
                 }
             }
