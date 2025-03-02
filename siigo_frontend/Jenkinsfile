@@ -1,0 +1,78 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven_3.8.3'
+    }
+
+    stages {
+        stage('Start Selenium Grid') {
+            steps {
+                script {
+                    sh """
+                        cd siigo_frontend/
+                        docker-compose up -d
+                    """
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            parallel {
+                stage('Edge Tests') {
+                    when {
+                        expression { params.EDGE }
+                    }
+                    steps {
+                        script {
+                            sh 'mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=edge'
+                        }
+                    }
+                }
+                stage('Chrome Tests') {
+                    when {
+                        expression { params.CHROME }
+                    }
+                    steps {
+                        script {
+                            sh 'mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=chrome'
+                        }
+                    }
+                }
+                stage('Firefox Tests') {
+                    when {
+                        expression { params.FIREFOX }
+                    }
+                    steps {
+                        script {
+                            sh 'mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=firefox'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Stop Selenium Grid') {
+            steps {
+                script {
+                    sh 'docker-compose down'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            publishHTML target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                keepAll: true,
+                reportDir: 'siigo_frontend/target/site/serenity',
+                reportFiles: 'index.html',
+                reportName: 'Serenity Report'
+            ]
+
+            archiveArtifacts artifacts: 'siigo_frontend/target/site/serenity/serenity-summary.html'
+        }
+    }
+}
