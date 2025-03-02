@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'EDGE', defaultValue: true, description: 'Run tests on Edge')
+        booleanParam(name: 'CHROME', defaultValue: true, description: 'Run tests on Chrome')
+        booleanParam(name: 'FIREFOX', defaultValue: true, description: 'Run tests on Firefox')
+    }
+
     tools {
         maven 'maven_3.8.3'
     }
