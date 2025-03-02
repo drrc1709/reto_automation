@@ -12,6 +12,43 @@ pipeline {
     }
 
     stages {
+
+        stage('Generate Docker Compose Override') {
+            steps {
+                script {
+                    def services = []
+                    if (params.EDGE) {
+                        services.add('edge')
+                    }
+                    if (params.CHROME) {
+                        services.add('chrome')
+                    }
+                    if (params.FIREFOX) {
+                        services.add('firefox')
+                    }
+
+                    def overrideContent = """
+                    services:
+                    """
+                    services.each { service ->
+                        overrideContent += """
+                          ${service}:
+                            image: selenium/node-${service}:4.29.0-20250222
+                            shm_size: 2gb
+                            depends_on:
+                              - selenium-hub
+                            environment:
+                              - SE_EVENT_BUS_HOST=selenium-hub
+                              - SE_EVENT_BUS_PUBLISH_PORT=4442
+                              - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+                        """
+                    }
+
+                    writeFile file: 'siigo_frontend/docker-compose.override.yml', text: overrideContent
+                }
+            }
+        }
+
         stage('Start Selenium Grid') {
             steps {
                 script {
@@ -31,7 +68,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh 'mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=edge'
+                            sh """
+                                cd siigo_frontend/
+                                mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=edge
+                            """
                         }
                     }
                 }
@@ -41,7 +81,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh 'mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=chrome'
+                            sh """
+                                cd siigo_frontend/
+                                mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=chrome
+                            """
                         }
                     }
                 }
@@ -51,7 +94,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh 'mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=firefox'
+                            sh """
+                                cd siigo_frontend/
+                                mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=firefox
+                            """
                         }
                     }
                 }
@@ -61,7 +107,10 @@ pipeline {
         stage('Stop Selenium Grid') {
             steps {
                 script {
-                    sh 'docker-compose down'
+                    sh """
+                        cd siigo_frontend/
+                        docker-compose down
+                    """
                 }
             }
         }
