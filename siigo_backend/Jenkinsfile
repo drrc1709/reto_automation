@@ -8,8 +8,12 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'cd siigo_backend/'
-                sh 'mvn clean verify -D-Dcucumber.filter.tags=@user'
+                script{
+                    sh """
+                        cd siigo_backend/
+                        mvn clean verify -D-Dcucumber.filter.tags=@user
+                    """
+                }
             }
         }
     }
@@ -20,12 +24,12 @@ pipeline {
                 allowMissing: false,
                 alwaysLinkToLastBuild: false,
                 keepAll: true,
-                reportDir: 'target/site/serenity',
+                reportDir: 'siigo_backend/target/site/serenity',
                 reportFiles: 'index.html',
                 reportName: 'Serenity Report'
             ]
 
-            archiveArtifacts artifacts: 'target/site/serenity/serenity-summary.html'
+            archiveArtifacts artifacts: 'siigo_backend/target/site/serenity/serenity-summary.html'
         }
     }
 }
