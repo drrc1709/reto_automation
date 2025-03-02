@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven_3.8.3'
+    }
+
+    stages {
+        stage('Test') {
+            steps {
+                sh 'mvn clean verify -D-Dcucumber.filter.tags=@user'
+            }
+        }
+    }
+
+    post {
+        always {
+            publishHTML target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                keepAll: true,
+                reportDir: 'target/site/serenity',
+                reportFiles: 'index.html',
+                reportName: 'Serenity Report'
+            ]
+
+            archiveArtifacts artifacts: 'target/site/serenity/serenity-summary.html'
+        }
+    }
+}

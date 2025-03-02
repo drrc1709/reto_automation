@@ -12,7 +12,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <serenity.version>4.2.0</serenity.version>
-        <cucumber.filter.tags>@defaultTag</cucumber.filter.tags>
     </properties>
 
     <dependencies>
@@ -98,10 +97,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
                 <configuration>
-                <systemPropertyVariables>
-                    <cucumber.filter.tags>${cucumber.filter.tags}</cucumber.filter.tags>
-                </systemPropertyVariables>
-            </configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
