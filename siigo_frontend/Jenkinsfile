@@ -70,7 +70,7 @@ pipeline {
                         script {
                             sh """
                                 cd siigo_frontend/
-                                mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=edge
+                                mvn clean verify -Dwebdriver.remote.url=http://selenium-hub:4444/wd/hub -Dwebdriver.remote.driver=edge
                             """
                         }
                     }
@@ -83,7 +83,7 @@ pipeline {
                         script {
                             sh """
                                 cd siigo_frontend/
-                                mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=chrome
+                                mvn clean verify -Dwebdriver.remote.url=http://selenium-hub:4444/wd/hub -Dwebdriver.remote.driver=chrome
                             """
                         }
                     }
@@ -96,7 +96,7 @@ pipeline {
                         script {
                             sh """
                                 cd siigo_frontend/
-                                mvn clean verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=firefox
+                                mvn clean verify -Dwebdriver.remote.url=http://selenium-hub:4444/wd/hub -Dwebdriver.remote.driver=firefox
                             """
                         }
                     }
